@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+@source "../index.html";
+
+/* Custom Color Theme */
+@theme {
+  --color-burgundy: #780000;
+  --color-red: #c1121f;
+  --color-cream: #fdf0d5;
+  --color-navy: #003049;
+  --color-blue: #669bbc;
+}
