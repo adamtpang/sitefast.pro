@@ -586,27 +586,31 @@
     <!-- Load API keys from config (local dev) -->
     <script src="../config.js"></script>
     <script>
-        // API keys - loaded from Vercel env vars or local config.js
+        // API keys - Priority: URL param > Vercel API > local config.js
         let GEMINI_API_KEY = '';
         let PSI_API_KEY = 'AIzaSyBjsQkGsTD0igGUCrFuCtvwYgP5CAfr6ao';
         const WORKER_BASE_URL = 'https://sitefast-edge.adamtpangelinan.workers.dev';
 
-        // Try to load from Vercel API (env vars), fallback to local config
         async function loadApiKeys() {
+            // 1. Check URL param first (for quick demo)
+            const urlKey = new URLSearchParams(window.location.search).get('gemini_key');
+            if (urlKey) {
+                GEMINI_API_KEY = urlKey;
+                return;
+            }
+
+            // 2. Try Vercel API (env vars)
             try {
                 const res = await fetch('/api/keys');
                 if (res.ok) {
                     const keys = await res.json();
-                    if (keys.gemini) GEMINI_API_KEY = keys.gemini;
-                    if (keys.psi) PSI_API_KEY = keys.psi;
-                    return;
+                    if (keys.gemini) { GEMINI_API_KEY = keys.gemini; return; }
                 }
             } catch (e) { }
 
-            // Fallback to local config.js
-            if (typeof CONFIG !== 'undefined') {
-                GEMINI_API_KEY = CONFIG.GEMINI_API_KEY || '';
-                PSI_API_KEY = CONFIG.PSI_API_KEY || PSI_API_KEY;
+            // 3. Fallback to local config.js
+            if (typeof CONFIG !== 'undefined' && CONFIG.GEMINI_API_KEY) {
+                GEMINI_API_KEY = CONFIG.GEMINI_API_KEY;
             }
         }
 
