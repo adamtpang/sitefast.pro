@@ -243,46 +243,7 @@
 
 <body>
     <div class="container">
-        <!-- Hackathon Banner -->
-        <div style="background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853); padding: 2px; border-radius: 8px; margin-bottom: 1.5rem;">
-            <div style="background: #000; color: #fff; padding: 1rem; border-radius: 6px; text-align: center;">
-                <div style="font-size: 12px; opacity: 0.7;">Gemini API Developer Competition 2025</div>
-                <div style="font-size: 18px; font-weight: 600; margin-top: 4px;">🚀 SiteFast Edge Optimizer</div>
-                <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Bulk PageSpeed auditing + AI-powered edge optimization</div>
-            </div>
-        </div>
-
         <a href="/" style="font-size: 13px; color: #666; text-decoration: none;">← sitefast.pro</a>
-
-        <!-- Edge Optimizer Concept -->
-        <div style="background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid #eee;">
-            <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 1rem;">🤖 How It Works</h2>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; font-size: 12px;">
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; margin-bottom: 4px;">📊</div>
-                    <div style="font-weight: 600;">1. Audit</div>
-                    <div style="color: #666;">Bulk scan domains via PageSpeed API</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; margin-bottom: 4px;">🧠</div>
-                    <div style="font-weight: 600;">2. Analyze</div>
-                    <div style="color: #666;">Gemini generates optimizations</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; margin-bottom: 4px;">⚡</div>
-                    <div style="font-weight: 600;">3. Transform</div>
-                    <div style="color: #666;">Edge worker applies fixes</div>
-                </div>
-                <div style="text-align: center;">
-                    <div style="font-size: 24px; margin-bottom: 4px;">🌐</div>
-                    <div style="font-weight: 600;">4. Serve</div>
-                    <div style="color: #666;">Optimized site globally</div>
-                </div>
-            </div>
-            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 11px; color: #666;">
-                <strong>Gemini Powers:</strong> JSON-LD schema generation • Meta description optimization • Critical resource identification • SEO improvements
-            </div>
-        </div>
 
         <h1 style="margin-top: 1rem;">LeadGen Site Audit</h1>
         <p class="subtitle">Extract PSI scores, calculate revenue leaks, and generate outreach-ready CSV for
@@ -415,7 +376,6 @@
             }
         }
 
-        // Revenue Leak Formula: (Traffic * 0.02 * 100) * 0.10
         function calcLeak(traffic) {
             return Math.round(traffic * 0.02 * 100 * 0.10);
         }
@@ -534,7 +494,6 @@
             $('progress').classList.add('hidden');
         };
 
-        // Standard CSV export
         $('exportCsv').onclick = () => {
             if (!data.length) return;
             log(`Exporting ${data.length} results to CSV...`, 'info');
@@ -544,12 +503,10 @@
             log(`✓ CSV downloaded`, 'success');
         };
 
-        // Instantly.ai formatted export
         $('exportInstantly').onclick = () => {
             if (!data.length) return;
             log(`Exporting for Instantly.ai...`, 'info');
 
-            // Instantly.ai format: email, first_name, custom variables
             const csv = 'email,first_name,company,website,lcp_score,leak_amount,workflow,personalization\n' +
                 data.map(r => {
                     const domain = r.domain.replace(/https?:\/\//, '');
