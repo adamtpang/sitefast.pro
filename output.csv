@@ -1,0 +1,4 @@
+Domain,Mobile_Score,LCP_Seconds,Revenue_Leak_USD,Personalized_Hook
+"https://example.com",100,0.76,0,"Your site loads in 0.8s - no major revenue leak detected."
+"https://google.com",81,1.70,0,"Your site loads in 1.7s - no major revenue leak detected."
+"https://github.com",59,5.54,20000,"I noticed your mobile site takes 5.5s to load, which is likely leaking $20,000 in monthly revenue."

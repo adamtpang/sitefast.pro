@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Audit | sitefast.pro</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fff;
+            color: #000;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            padding: 1rem;
+            border: 1px solid #000;
+            font-size: 14px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: 2px solid #000;
+            outline-offset: -2px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        label {
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        input[type="radio"] {
+            accent-color: #000;
+        }
+
+        input[type="number"] {
+            width: 100px;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        button {
+            background: #000;
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #333;
+        }
+
+        button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #fff;
+            color: #000;
+            border: 1px solid #000;
+        }
+
+        button.secondary:hover {
+            background: #f5f5f5;
+        }
+
+        .progress {
+            margin-top: 1.5rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #eee;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #000;
+            transition: width 0.3s;
+        }
+
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-weight: 600;
+            border-bottom: 2px solid #000;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        .score {
+            display: inline-block;
+            padding: 2px 6px;
+            font-weight: 600;
+            font-size: 11px;
+        }
+
+        .score.good {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .score.avg {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .score.poor {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .score.none {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .leak {
+            color: #c62828;
+            font-weight: 600;
+        }
+
+        .hook {
+            font-size: 11px;
+            color: #333;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        #log {
+            background: #111;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 10px;
+            padding: 0.75rem;
+            height: 120px;
+            overflow-y: auto;
+            border-radius: 4px;
+            margin-top: 1rem;
+        }
+
+        .formula {
+            background: #f9f9f9;
+            padding: 1rem;
+            font-size: 12px;
+            margin-top: 1rem;
+            border-left: 3px solid #000;
+        }
+
+        .workflow-tag {
+            font-size: 10px;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+
+        .workflow-tag.validated {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .workflow-tag.invalidated {
+            background: #ffebee;
+            color: #c62828;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Hackathon Banner -->
+        <div style="background: linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853); padding: 2px; border-radius: 8px; margin-bottom: 1.5rem;">
+            <div style="background: #000; color: #fff; padding: 1rem; border-radius: 6px; text-align: center;">
+                <div style="font-size: 12px; opacity: 0.7;">Gemini API Developer Competition 2025</div>
+                <div style="font-size: 18px; font-weight: 600; margin-top: 4px;">🚀 SiteFast Edge Optimizer</div>
+                <div style="font-size: 11px; opacity: 0.6; margin-top: 4px;">Bulk PageSpeed auditing + AI-powered edge optimization</div>
+            </div>
+        </div>
+
+        <a href="/" style="font-size: 13px; color: #666; text-decoration: none;">← sitefast.pro</a>
+
+        <!-- Edge Optimizer Concept -->
+        <div style="background: #f9f9f9; border-radius: 8px; padding: 1.5rem; margin: 1.5rem 0; border: 1px solid #eee;">
+            <h2 style="font-size: 16px; font-weight: 600; margin-bottom: 1rem;">🤖 How It Works</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; font-size: 12px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; margin-bottom: 4px;">📊</div>
+                    <div style="font-weight: 600;">1. Audit</div>
+                    <div style="color: #666;">Bulk scan domains via PageSpeed API</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; margin-bottom: 4px;">🧠</div>
+                    <div style="font-weight: 600;">2. Analyze</div>
+                    <div style="color: #666;">Gemini generates optimizations</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; margin-bottom: 4px;">⚡</div>
+                    <div style="font-weight: 600;">3. Transform</div>
+                    <div style="color: #666;">Edge worker applies fixes</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 24px; margin-bottom: 4px;">🌐</div>
+                    <div style="font-weight: 600;">4. Serve</div>
+                    <div style="color: #666;">Optimized site globally</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #eee; font-size: 11px; color: #666;">
+                <strong>Gemini Powers:</strong> JSON-LD schema generation • Meta description optimization • Critical resource identification • SEO improvements
+            </div>
+        </div>
+
+        <h1 style="margin-top: 1rem;">LeadGen Site Audit</h1>
+        <p class="subtitle">Extract PSI scores, calculate revenue leaks, and generate outreach-ready CSV for
+            Instantly.ai</p>
+
+        <textarea id="domains"
+            placeholder="Enter domains, one per line&#10;&#10;example.com&#10;mysite.org&#10;another.com"></textarea>
+
+        <div class="controls">
+            <div class="radio-group">
+                <label><input type="radio" name="strategy" value="mobile" checked> Mobile</label>
+                <label><input type="radio" name="strategy" value="desktop"> Desktop</label>
+            </div>
+            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                Est. Traffic:
+                <input type="number" id="traffic" value="50000" min="1000" step="1000">
+            </label>
+            <button id="start">Start Audit</button>
+        </div>
+
+        <div class="formula">
+            <strong>Revenue Leak Formula:</strong> (Traffic × 0.02 × $100) × 0.10 = Potential Monthly Loss<br>
+            <span style="color: #666;">If PSI score = 0 (timeout) → "Digitally Invalidated" workflow</span>
+        </div>
+
+        <div id="logSection" class="hidden">
+            <div id="log"></div>
+        </div>
+
+        <div id="progress" class="progress hidden">
+            <span class="progress-text" id="progressText">0 / 0</span>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <div id="results" class="hidden">
+            <div class="header">
+                <span style="font-weight: 600;">Results</span>
+                <div>
+                    <button id="exportCsv" class="secondary">Export CSV</button>
+                    <button id="exportInstantly" class="secondary" style="margin-left: 0.5rem;">Export for
+                        Instantly.ai</button>
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Domain</th>
+                            <th>Score</th>
+                            <th>LCP</th>
+                            <th>TBT</th>
+                            <th>Leak</th>
+                            <th>Workflow</th>
+                            <th>Outreach Hook</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_KEY = 'AIzaSyBjsQkGsTD0igGUCrFuCtvwYgP5CAfr6ao';
+        const data = [];
+
+        const $ = id => document.getElementById(id);
+
+        function log(msg, type = 'info') {
+            const logEl = $('log');
+            const time = new Date().toLocaleTimeString();
+            const colors = { info: '#0f0', warn: '#ff0', error: '#f55', success: '#0ff' };
+            logEl.innerHTML += `<div style="color: ${colors[type] || '#0f0'}">[${time}] ${msg}</div>`;
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        function getStrategy() {
+            return document.querySelector('input[name="strategy"]:checked').value;
+        }
+
+        function getTraffic() {
+            return parseInt($('traffic').value) || 50000;
+        }
+
+        function parseDomains(text) {
+            return text.split('\n')
+                .map(d => d.trim())
+                .filter(d => d)
+                .map(d => d.startsWith('http') ? d : 'https://' + d);
+        }
+
+        async function audit(url, strategy) {
+            const startTime = Date.now();
+            log(`→ Auditing ${url.replace(/https?:\/\//, '')}...`);
+
+            try {
+                const apiUrl = `https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${encodeURIComponent(url)}&strategy=${strategy}&key=${API_KEY}`;
+                const res = await fetch(apiUrl);
+                const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+
+                if (!res.ok) {
+                    log(`  HTTP ${res.status} after ${elapsed}s`, 'error');
+                    throw new Error(`HTTP ${res.status}`);
+                }
+
+                const json = await res.json();
+
+                if (json.error) {
+                    log(`  API error: ${json.error.message}`, 'error');
+                    throw new Error(json.error.message);
+                }
+
+                const lhr = json.lighthouseResult;
+                const score = Math.round((lhr.categories?.performance?.score || 0) * 100);
+                const lcpAudit = lhr.audits?.['largest-contentful-paint'];
+                const tbtAudit = lhr.audits?.['total-blocking-time'];
+
+                const lcp = lcpAudit?.numericValue ? (lcpAudit.numericValue / 1000) : 0;
+                const lcpDisplay = lcpAudit?.displayValue || 'N/A';
+                const tbtDisplay = tbtAudit?.displayValue || 'N/A';
+
+                log(`  ✓ Score: ${score} | LCP: ${lcpDisplay} | TBT: ${tbtDisplay} | ${elapsed}s`, 'success');
+
+                return { url, score, lcp, lcpDisplay, tbtDisplay };
+            } catch (e) {
+                log(`  ✗ Failed: ${e.message}`, 'error');
+                return { url, score: 0, lcp: 0, lcpDisplay: 'N/A', tbtDisplay: 'N/A', error: e.message };
+            }
+        }
+
+        // Revenue Leak Formula: (Traffic * 0.02 * 100) * 0.10
+        function calcLeak(traffic) {
+            return Math.round(traffic * 0.02 * 100 * 0.10);
+        }
+
+        function getWorkflow(score) {
+            if (score === 0) return { type: 'invalidated', label: 'Digitally Invalidated' };
+            if (score < 50) return { type: 'invalidated', label: 'Needs Optimization' };
+            return { type: 'validated', label: 'Digitally Validated' };
+        }
+
+        function generateHook(domain, score, lcpDisplay, leak, workflow) {
+            const cleanDomain = domain.replace(/https?:\/\//, '');
+
+            if (workflow.type === 'invalidated' && score === 0) {
+                return `Hi {{founder_name}}, I noticed ${cleanDomain} isn't loading properly (PSI timeout). You're likely missing out on $${leak.toLocaleString()}/mo in potential revenue. Want me to take a look?`;
+            }
+
+            if (workflow.type === 'invalidated') {
+                return `Hi {{founder_name}}, ${cleanDomain} scores ${score}/100 on mobile with ${lcpDisplay} load time. That's costing you ~$${leak.toLocaleString()}/mo. I can fix this in 24hrs.`;
+            }
+
+            return `Hi {{founder_name}}, ${cleanDomain} is performing well (${score}/100). But there may still be $${leak.toLocaleString()}/mo on the table with a few tweaks.`;
+        }
+
+        function scoreClass(s) {
+            if (s === 0) return 'none';
+            if (s >= 90) return 'good';
+            if (s >= 50) return 'avg';
+            return 'poor';
+        }
+
+        function addRow(r, traffic) {
+            const leak = calcLeak(traffic);
+            const workflow = getWorkflow(r.score);
+            const hook = generateHook(r.url, r.score, r.lcpDisplay, leak, workflow);
+
+            data.push({
+                domain: r.url,
+                score: r.score,
+                lcp: r.lcp,
+                lcpDisplay: r.lcpDisplay,
+                tbtDisplay: r.tbtDisplay,
+                leak,
+                workflow: workflow.label,
+                hook,
+                error: r.error
+            });
+
+            const tr = document.createElement('tr');
+            if (r.error) {
+                tr.innerHTML = `
+          <td>${r.url.replace(/https?:\/\//, '')}</td>
+          <td><span class="score none">ERR</span></td>
+          <td colspan="5" style="color:#999">${r.error}</td>
+        `;
+            } else {
+                tr.innerHTML = `
+          <td style="font-weight: 500;">${r.url.replace(/https?:\/\//, '')}</td>
+          <td><span class="score ${scoreClass(r.score)}">${r.score}</span></td>
+          <td>${r.lcpDisplay}</td>
+          <td>${r.tbtDisplay}</td>
+          <td class="${leak ? 'leak' : ''}">$${leak.toLocaleString()}</td>
+          <td><span class="workflow-tag ${workflow.type}">${workflow.label}</span></td>
+          <td class="hook">${hook.replace(/\{\{founder_name\}\}/g, '[Name]')}</td>
+        `;
+            }
+            $('tbody').appendChild(tr);
+        }
+
+        $('start').onclick = async () => {
+            const domains = parseDomains($('domains').value);
+            if (!domains.length) return alert('Enter at least one domain');
+
+            data.length = 0;
+            $('tbody').innerHTML = '';
+            $('log').innerHTML = '';
+            $('progress').classList.remove('hidden');
+            $('logSection').classList.remove('hidden');
+            $('results').classList.remove('hidden');
+            $('start').disabled = true;
+            $('start').textContent = 'Auditing...';
+
+            const strategy = getStrategy();
+            const traffic = getTraffic();
+            const totalStart = Date.now();
+
+            log(`Starting LeadGen audit of ${domains.length} domain(s)`, 'info');
+            log(`Strategy: ${strategy.toUpperCase()} | Est. Traffic: ${traffic.toLocaleString()}`, 'info');
+            log(`---`, 'info');
+
+            for (let i = 0; i < domains.length; i++) {
+                $('progressText').textContent = `${i + 1} / ${domains.length}`;
+                $('progressFill').style.width = `${((i + 1) / domains.length) * 100}%`;
+
+                const result = await audit(domains[i], strategy);
+                addRow(result, traffic);
+
+                if (i < domains.length - 1) {
+                    log(`  Rate limit pause (1.2s)...`, 'warn');
+                    await new Promise(r => setTimeout(r, 1200));
+                }
+            }
+
+            const totalTime = ((Date.now() - totalStart) / 1000).toFixed(1);
+            const validated = data.filter(d => d.score >= 50).length;
+            const invalidated = data.filter(d => d.score < 50).length;
+            const totalLeak = data.reduce((sum, d) => sum + d.leak, 0);
+
+            log(`---`, 'info');
+            log(`✓ Complete in ${totalTime}s`, 'success');
+            log(`  Validated: ${validated} | Invalidated: ${invalidated}`, 'info');
+            log(`  Total potential leak: $${totalLeak.toLocaleString()}`, 'warn');
+
+            $('start').disabled = false;
+            $('start').textContent = 'Start Audit';
+            $('progress').classList.add('hidden');
+        };
+
+        // Standard CSV export
+        $('exportCsv').onclick = () => {
+            if (!data.length) return;
+            log(`Exporting ${data.length} results to CSV...`, 'info');
+            const csv = 'Domain,Score,LCP,TBT,Revenue_Leak,Workflow,Hook\n' +
+                data.map(r => `"${r.domain}",${r.score},"${r.lcpDisplay}","${r.tbtDisplay}",${r.leak},"${r.workflow}","${r.hook.replace(/"/g, '""')}"`).join('\n');
+            downloadFile(csv, `audit-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv');
+            log(`✓ CSV downloaded`, 'success');
+        };
+
+        // Instantly.ai formatted export
+        $('exportInstantly').onclick = () => {
+            if (!data.length) return;
+            log(`Exporting for Instantly.ai...`, 'info');
+
+            // Instantly.ai format: email, first_name, custom variables
+            const csv = 'email,first_name,company,website,lcp_score,leak_amount,workflow,personalization\n' +
+                data.map(r => {
+                    const domain = r.domain.replace(/https?:\/\//, '');
+                    return `"{{email}}","{{founder_name}}","${domain}","${r.domain}","${r.lcpDisplay}",${r.leak},"${r.workflow}","${r.hook.replace(/"/g, '""')}"`;
+                }).join('\n');
+
+            downloadFile(csv, `instantly-${new Date().toISOString().slice(0, 10)}.csv`, 'text/csv');
+            log(`✓ Instantly.ai CSV downloaded (merge with contact data)`, 'success');
+        };
+
+        function downloadFile(content, filename, type) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([content], { type }));
+            a.download = filename;
+            a.click();
+        }
+    </script>
+</body>
+
+</html>
